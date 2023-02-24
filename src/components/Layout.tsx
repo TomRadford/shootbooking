@@ -3,7 +3,7 @@ import Link from 'next/link'
 const Layout = ({ children }: { children: React.ReactNode }) => (
 	<div className="mx-4">
 		<nav className="mb-10 w-full">
-			<div className=" mx-auto flex max-w-xl items-center justify-between gap-3">
+			<div className=" mx-auto flex max-w-4xl items-center justify-between gap-3">
 				<Link href="/" className=" flex flex-col items-center justify-center">
 					<svg
 						fill="white"

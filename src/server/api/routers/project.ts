@@ -1,13 +1,13 @@
 import { TRPCError } from '@trpc/server'
-import { projectSchema } from '~/schema'
+import { projectInputSchema } from '~/inputSchema'
 import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc'
 
 export const projectRouter = createTRPCRouter({
 	postMessage: publicProcedure
-		.input(projectSchema)
+		.input(projectInputSchema)
 		.mutation(async ({ ctx, input }) => {
 			try {
-				await ctx.prisma.project.create({
+				return await ctx.prisma.project.create({
 					data: {
 						...input,
 					},
@@ -15,7 +15,7 @@ export const projectRouter = createTRPCRouter({
 			} catch (e) {
 				throw new TRPCError({
 					code: 'INTERNAL_SERVER_ERROR',
-					message: 'An error occured',
+					message: `An error occured`,
 					cause: e,
 				})
 			}
