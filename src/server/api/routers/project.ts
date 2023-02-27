@@ -20,9 +20,28 @@ export const projectRouter = createTRPCRouter({
 				})
 			}
 		}),
-	getAll: publicProcedure.query(async ({ ctx }) => {
+	getAllPipeline: publicProcedure.query(async ({ ctx }) => {
 		try {
-			return await ctx.prisma.project.findMany()
+			return await ctx.prisma.project.findMany({
+				where: {
+					approved: false,
+				},
+			})
+		} catch (e) {
+			throw new TRPCError({
+				code: 'INTERNAL_SERVER_ERROR',
+				message: 'An error occured',
+				cause: e,
+			})
+		}
+	}),
+	getAllActive: publicProcedure.query(async ({ ctx }) => {
+		try {
+			return await ctx.prisma.project.findMany({
+				where: {
+					approved: true,
+				},
+			})
 		} catch (e) {
 			throw new TRPCError({
 				code: 'INTERNAL_SERVER_ERROR',

@@ -5,8 +5,9 @@ import ProjectTable from '~/components/Project/Table'
 import { api } from '~/utils/api'
 
 const PipelinePage = () => {
-	const { data, isLoading } = api.project.getAll.useQuery()
-	console.log(data)
+	const { data: allPipelineProjects, isLoading } =
+		api.project.getAllPipeline.useQuery()
+	console.log(allPipelineProjects)
 	return (
 		<>
 			<Head>
@@ -18,11 +19,13 @@ const PipelinePage = () => {
 						<h1 className="mb-2 text-2xl font-bold">
 							Project Pipeline Summary
 						</h1>
-						<p>All upcomming live action shoots yet to be finalised</p>
+						<p>All upcomming live action shoots that are yet to be finalised</p>
 						{isLoading ? (
 							<CircleLoader size="100" />
+						) : allPipelineProjects ? (
+							<ProjectTable projects={allPipelineProjects} />
 						) : (
-							<ProjectTable projects={[]} />
+							<p>Unable to fetch pipeline projects</p>
 						)}
 					</div>
 				</div>
