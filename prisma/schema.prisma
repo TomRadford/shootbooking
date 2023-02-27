@@ -78,7 +78,7 @@ model Project {
   finalisedConcept Boolean
   concept          String?   @db.Text
   locations        String?   @db.Text
-  scriptUrl        String?
+  scriptUrl        String[]
   budget           String?
   resources        String[]
   shootStart       DateTime?

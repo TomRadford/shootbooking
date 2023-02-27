@@ -16,8 +16,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => (
 					<h1 className="font-bold">Shoot Booking</h1>
 				</Link>
 				<div className="flex gap-2 font-bold">
-					<Link href="/project/add">Add</Link>
-					<Link href="/project/add">View</Link>
+					<Link href="/projects/active">Active</Link>
+					<Link href="/projects/pipeline">Pipeline</Link>
+					<Link href="/projects/add">Add</Link>
 				</div>
 			</div>
 		</nav>

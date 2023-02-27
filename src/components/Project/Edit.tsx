@@ -14,14 +14,14 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { useEffect } from 'react'
 import { useRouter } from 'next/router'
-type Project = z.infer<typeof projectInputSchema>
+type ProjectInput = z.infer<typeof projectInputSchema>
 
 type inputType = {
-	errors: FieldErrors<Project>
-	register: UseFormRegister<Project>
-	setValue?: UseFormSetValue<Project>
+	errors: FieldErrors<ProjectInput>
+	register: UseFormRegister<ProjectInput>
+	setValue?: UseFormSetValue<ProjectInput>
 	label: string
-	value: keyof Project
+	value: keyof ProjectInput
 	type: 'text' | 'number' | 'textarea'
 	required?: boolean
 }
@@ -54,7 +54,7 @@ const Input = (
 		  })
 		| (Omit<inputType, 'type'> & {
 				type: 'date'
-				control: Control<Project>
+				control: Control<ProjectInput>
 		  })
 ) => {
 	if (props.type === 'yesNo') {
@@ -147,7 +147,7 @@ const Input = (
 	)
 }
 
-const EditProject = ({ project }: { project?: Project }) => {
+const EditProject = ({ project }: { project?: ProjectInput }) => {
 	const router = useRouter()
 	const {
 		register,
@@ -157,7 +157,7 @@ const EditProject = ({ project }: { project?: Project }) => {
 		control,
 		formState: { errors },
 		setValue,
-	} = useForm<Project>({
+	} = useForm<ProjectInput>({
 		resolver: zodResolver(projectInputSchema),
 		defaultValues: { resources: [] },
 	})
@@ -165,17 +165,16 @@ const EditProject = ({ project }: { project?: Project }) => {
 		onSuccess: (data) => {
 			reset()
 			console.log(data)
-			void router.push(`/project/${data.id}`)
+			void router.push(`/projects/${data.id}`)
 		},
 	})
-	const onSubmit = (data: Project) => {
+	const onSubmit = (data: ProjectInput) => {
 		postMessage.mutate(data)
 
-		console.log(data)
+		// console.log(data)
 		// reset()
 	}
 	console.log(errors)
-
 	return (
 		<form
 			onSubmit={handleSubmit(onSubmit)}
@@ -217,7 +216,7 @@ const EditProject = ({ project }: { project?: Project }) => {
 			<Input
 				errors={errors}
 				register={register}
-				label="Does this shoot have a concept"
+				label="Does this shoot have a finalised concept?"
 				value="finalisedConcept"
 				type="yesNo"
 			/>

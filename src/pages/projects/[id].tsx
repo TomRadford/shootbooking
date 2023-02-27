@@ -19,5 +19,8 @@ const AddPage = () => {
 		</>
 	)
 }
+// const getServerSideProps = async ({ params }: GetServerSidePropsContext) => {
+
+// }
 
 export default AddPage

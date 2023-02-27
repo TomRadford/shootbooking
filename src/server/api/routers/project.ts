@@ -20,4 +20,15 @@ export const projectRouter = createTRPCRouter({
 				})
 			}
 		}),
+	getAll: publicProcedure.query(async ({ ctx }) => {
+		try {
+			return await ctx.prisma.project.findMany()
+		} catch (e) {
+			throw new TRPCError({
+				code: 'INTERNAL_SERVER_ERROR',
+				message: 'An error occured',
+				cause: e,
+			})
+		}
+	}),
 })
