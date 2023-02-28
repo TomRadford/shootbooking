@@ -26,16 +26,28 @@ export const projectInputSchema = z
 		shootStart: z.date().optional(),
 		shootEnd: z.date().optional(),
 		dueDate: z.date().optional(),
-		approved: z.boolean().default(false),
+		approved: z.boolean(),
 		projectCode: z.string().optional(),
 		notes: z.string(),
 	})
 	// Make some fields required when approved
-	.refine((data) => data.approved && !data.shootStart, {
-		message: 'Shoot start date missing',
-		path: ['shootStart'],
+	.superRefine((val, ctx) => {
+		if (val.approved) {
+			if (!val.shootStart) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.invalid_date,
+					path: ['shootStart'],
+				})
+			}
+			if (!val.shootEnd) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					path: ['shootEnd'],
+				})
+			}
+		}
 	})
-	.refine((data) => data.approved && !data.shootEnd, {
-		message: 'Shoot end date missing',
-		path: ['shootEnd'],
-	})
+// .refine((data) => data.approved === true && !data.shootStart, {
+// 	message: 'Shoot start date missing',
+// 	path: ['shootStart'],
+// })

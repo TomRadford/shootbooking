@@ -12,8 +12,8 @@ import { type z } from 'zod'
 import { projectInputSchema } from '~/inputSchema'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
-import { useEffect } from 'react'
 import { useRouter } from 'next/router'
+
 type ProjectInput = z.infer<typeof projectInputSchema>
 
 type inputType = {
@@ -128,6 +128,7 @@ const Input = (
 			</fieldset>
 		)
 	}
+
 	return (
 		<div className="flex flex-col">
 			<label>
@@ -159,7 +160,7 @@ const EditProject = ({ project }: { project?: ProjectInput }) => {
 		setValue,
 	} = useForm<ProjectInput>({
 		resolver: zodResolver(projectInputSchema),
-		defaultValues: { resources: [] },
+		defaultValues: { resources: [], approved: false },
 	})
 	const postMessage = api.project.postMessage.useMutation({
 		onSuccess: (data) => {
@@ -175,6 +176,8 @@ const EditProject = ({ project }: { project?: ProjectInput }) => {
 		// reset()
 	}
 	console.log(errors)
+	console.log(watch())
+
 	return (
 		<form
 			onSubmit={handleSubmit(onSubmit)}
