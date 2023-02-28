@@ -13,6 +13,7 @@ import { projectInputSchema } from '~/inputSchema'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { useRouter } from 'next/router'
+import { CircleLoader } from '../common/LoadingSpinners'
 
 type ProjectInput = z.infer<typeof projectInputSchema>
 
@@ -162,7 +163,7 @@ const EditProject = ({ project }: { project?: ProjectInput }) => {
 		resolver: zodResolver(projectInputSchema),
 		defaultValues: { resources: [], approved: false },
 	})
-	const postMessage = api.project.postMessage.useMutation({
+	const postProject = api.project.postProject.useMutation({
 		onSuccess: (data) => {
 			reset()
 			console.log(data)
@@ -170,7 +171,7 @@ const EditProject = ({ project }: { project?: ProjectInput }) => {
 		},
 	})
 	const onSubmit = (data: ProjectInput) => {
-		postMessage.mutate(data)
+		postProject.mutate(data)
 
 		// console.log(data)
 		// reset()
@@ -316,12 +317,16 @@ const EditProject = ({ project }: { project?: ProjectInput }) => {
 				value="notes"
 				type="textarea"
 			/>
-
-			<button type="submit" className="font-bold">
-				{project ? `Edit` : `Create`} Project
-			</button>
-			{postMessage.isLoading && 'loading'}
-			{postMessage.error?.message}
+			{!postProject.isLoading ? (
+				<button type="submit" className="font-bold">
+					{project ? `Edit` : `Create`} Project
+				</button>
+			) : (
+				<div className="mx-auto">
+					<CircleLoader size="50" />
+				</div>
+			)}
+			{postProject.error?.message}
 		</form>
 	)
 }

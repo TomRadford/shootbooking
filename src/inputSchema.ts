@@ -27,7 +27,8 @@ export const projectInputSchema = z
 		shootEnd: z.date().optional(),
 		dueDate: z.date().optional(),
 		approved: z.boolean(),
-		projectCode: z.string().optional(),
+		complete: z.boolean().default(false),
+		jobNumber: z.string().optional(),
 		notes: z.string(),
 	})
 	// Make some fields required when approved

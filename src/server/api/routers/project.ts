@@ -3,7 +3,7 @@ import { projectInputSchema } from '~/inputSchema'
 import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc'
 import { z } from 'zod'
 export const projectRouter = createTRPCRouter({
-	postMessage: publicProcedure
+	postProject: publicProcedure
 		.input(projectInputSchema)
 		.mutation(async ({ ctx, input }) => {
 			try {
@@ -24,6 +24,7 @@ export const projectRouter = createTRPCRouter({
 		.input(
 			z.object({
 				approved: z.boolean(),
+				complete: z.boolean().optional(),
 			})
 		)
 		.query(async ({ ctx, input }) => {
@@ -31,6 +32,10 @@ export const projectRouter = createTRPCRouter({
 				return await ctx.prisma.project.findMany({
 					where: {
 						approved: input.approved,
+						complete: input.complete ?? false,
+					},
+					orderBy: {
+						createdAt: 'desc',
 					},
 				})
 			} catch (e) {

@@ -74,8 +74,9 @@ const ProjectTable = ({ projects }: { projects: Project[] }) => {
 		columnResizeMode: 'onChange',
 		getCoreRowModel: getCoreRowModel(),
 		getSortedRowModel: getSortedRowModel(),
-		enableSorting: true,
 	})
+	const router = useRouter()
+
 	const utils = api.useContext()
 
 	const addProjectToCache = (id: string) => {
@@ -86,7 +87,7 @@ const ProjectTable = ({ projects }: { projects: Project[] }) => {
 	return (
 		<div className=" mx-auto w-96 overflow-x-auto shadow-md sm:rounded-lg md:w-full">
 			<table className="w-full text-left text-sm text-gray-400">
-				<thead className="bg-neutral-800 text-xs uppercase text-gray-400">
+				<thead className=" bg-gradient-to-t from-neutral-800 to-neutral-900 text-xs uppercase text-gray-400">
 					{table.getHeaderGroups().map((headerGroup) => (
 						<tr key={headerGroup.id}>
 							{headerGroup.headers.map((header) => (
@@ -117,8 +118,12 @@ const ProjectTable = ({ projects }: { projects: Project[] }) => {
 				<tbody>
 					{table.getRowModel().rows.map((row) => (
 						<tr
+							onClick={() => {
+								addProjectToCache(row.original.id)
+								void router.push(`/projects/${row.original.id}`)
+							}}
 							key={row.id}
-							className="border-b border-neutral-700  bg-neutral-900 hover:bg-neutral-800"
+							className="cursor-pointer border-b border-neutral-700  bg-neutral-900 hover:bg-neutral-800"
 						>
 							{row.getVisibleCells().map((cell) => {
 								if (cell.column.id === 'name') {

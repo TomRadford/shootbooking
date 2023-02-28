@@ -85,7 +85,8 @@ model Project {
   shootEnd         DateTime?
   dueDate          DateTime?
   approved         Boolean   @default(false)
-  projectCode      String?
+  complete         Boolean   @default(false)
+  jobNumber        String?
   notes            String?   @db.Text
   userId           String?
   User             User?     @relation(fields: [userId], references: [id])
