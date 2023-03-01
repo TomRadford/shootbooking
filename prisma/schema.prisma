@@ -75,9 +75,10 @@ model Project {
   shootType        String
   shootBase        String
   head             String
-  finalisedConcept Boolean
+  finalisedConcept Boolean   @default(false)
   concept          String?   @db.Text
   locations        String?   @db.Text
+  finalisedScript  Boolean   @default(false)
   scriptUrl        String[]
   budget           String?
   resources        String[]

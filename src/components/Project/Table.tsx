@@ -11,6 +11,7 @@ import { andFormatter } from '~/utils/formatter'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { api } from '~/utils/api'
+import { useAddProjectToCache } from '~/utils/hooks/cache'
 
 type RouterOutput = inferRouterOutputs<AppRouter>
 
@@ -76,13 +77,7 @@ const ProjectTable = ({ projects }: { projects: Project[] }) => {
 		getSortedRowModel: getSortedRowModel(),
 	})
 	const router = useRouter()
-
-	const utils = api.useContext()
-
-	const addProjectToCache = (id: string) => {
-		const projectToAdd = projects.find((project) => project.id === id)
-		utils.project.getProject.setData({ id }, () => projectToAdd)
-	}
+	const addProjectToCache = useAddProjectToCache(projects)
 
 	return (
 		<div className=" mx-auto w-96 overflow-x-auto shadow-md sm:rounded-lg md:w-full">

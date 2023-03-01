@@ -14,6 +14,13 @@ import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { useRouter } from 'next/router'
 import { CircleLoader } from '../common/LoadingSpinners'
+import { budgetOptions } from '~/utils/common'
+import { type inferRouterOutputs } from '@trpc/server'
+import { type AppRouter } from '~/server/api/root'
+
+type RouterOutput = inferRouterOutputs<AppRouter>
+
+type Project = RouterOutput['project']['getAll'][0]
 
 type ProjectInput = z.infer<typeof projectInputSchema>
 
@@ -91,12 +98,13 @@ const Input = (
 				</label>
 				<Controller
 					control={props.control}
-					name="dueDate"
+					name={props.value}
 					render={({ field }) => (
 						<DatePicker
 							className="w-full"
-							selected={field.value}
+							selected={field.value as Date}
 							onChange={field.onChange}
+							dateFormat="dd MMMM YYY"
 						/>
 					)}
 				/>
@@ -149,7 +157,7 @@ const Input = (
 	)
 }
 
-const EditProject = ({ project }: { project?: ProjectInput }) => {
+const EditProject = ({ project }: { project?: Project }) => {
 	const router = useRouter()
 	const {
 		register,
@@ -161,20 +169,30 @@ const EditProject = ({ project }: { project?: ProjectInput }) => {
 		setValue,
 	} = useForm<ProjectInput>({
 		resolver: zodResolver(projectInputSchema),
-		defaultValues: { resources: [], approved: false },
+		defaultValues: project
+			? (project as unknown as ProjectInput)
+			: { resources: [], scriptUrl: [], approved: false },
 	})
+	const utils = api.useContext()
 	const postProject = api.project.postProject.useMutation({
 		onSuccess: (data) => {
-			reset()
-			console.log(data)
+			utils.project.getProject.setData({ id: data.id }, () => data)
 			void router.push(`/projects/${data.id}`)
 		},
 	})
-	const onSubmit = (data: ProjectInput) => {
-		postProject.mutate(data)
+	const updateProject = api.project.updateProject.useMutation({
+		onSuccess: (data) => {
+			utils.project.getProject.setData({ id: data.id }, () => data)
+			void router.push(`/projects/${data.id}`)
+		},
+	})
 
-		// console.log(data)
-		// reset()
+	const onSubmit = (data: ProjectInput) => {
+		if (project) {
+			updateProject.mutate({ ...data, id: project.id })
+		} else {
+			postProject.mutate(data)
+		}
 	}
 	console.log(errors)
 	console.log(watch())
@@ -199,6 +217,13 @@ const EditProject = ({ project }: { project?: ProjectInput }) => {
 				value="client"
 				type="text"
 				required={true}
+			/>
+			<Input
+				errors={errors}
+				register={register}
+				label="Job number"
+				value="jobNumber"
+				type="text"
 			/>
 			<Input
 				errors={errors}
@@ -237,29 +262,19 @@ const EditProject = ({ project }: { project?: ProjectInput }) => {
 			<Input
 				errors={errors}
 				register={register}
+				label="Does this shoot have a finalised script?"
+				value="finalisedScript"
+				type="yesNo"
+			/>
+			{/* {watch().finalisedScript && <p>Script upload goes here</p>} */}
+			<Input
+				errors={errors}
+				register={register}
 				label="Estimated budget for the shoot"
 				value="budget"
 				type="radio"
 				setValue={setValue}
-				options={[
-					'R < 50 000 . 00',
-					'R 50 - 60 000 . 00',
-					'R 60 - 70 000 . 00',
-					'R 70 - 80 000 . 00',
-					'R 80 - 90 000 . 00',
-					'R 90 - 100 000 . 00',
-					'R 100 - 110 000 . 00',
-					'R 110 - 120 000 . 00',
-					'R 120 - 130 000 . 00',
-					'R 130 - 140 000 . 00',
-					'R 140 - 150 000 . 00',
-					'R 150 - 160 000 . 00',
-					'R 160 - 170 000 . 00',
-					'R 170 - 180 000 . 00',
-					'R 180 - 190 000 . 00',
-					'R 190 - 200 000 . 00',
-					'R > 200 000 . 00',
-				]}
+				options={budgetOptions}
 				required={true}
 			/>
 
@@ -299,8 +314,6 @@ const EditProject = ({ project }: { project?: ProjectInput }) => {
 				type="textarea"
 			/>
 
-			{/* ToDo: custom date picker */}
-
 			<Input
 				errors={errors}
 				register={register}
@@ -313,11 +326,29 @@ const EditProject = ({ project }: { project?: ProjectInput }) => {
 			<Input
 				errors={errors}
 				register={register}
+				type="date"
+				label="Shoot start date"
+				value="shootStart"
+				control={control}
+			/>
+
+			<Input
+				errors={errors}
+				register={register}
+				type="date"
+				label="Shoot end date"
+				value="shootEnd"
+				control={control}
+			/>
+
+			<Input
+				errors={errors}
+				register={register}
 				label="Additional Notes"
 				value="notes"
 				type="textarea"
 			/>
-			{!postProject.isLoading ? (
+			{!(postProject.isLoading || updateProject.isLoading) ? (
 				<button type="submit" className="font-bold">
 					{project ? `Edit` : `Create`} Project
 				</button>
@@ -327,6 +358,7 @@ const EditProject = ({ project }: { project?: ProjectInput }) => {
 				</div>
 			)}
 			{postProject.error?.message}
+			{updateProject.error?.message}
 		</form>
 	)
 }

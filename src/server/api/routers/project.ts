@@ -11,6 +11,37 @@ export const projectRouter = createTRPCRouter({
 					data: {
 						...input,
 					},
+					include: {
+						User: true,
+					},
+				})
+			} catch (e) {
+				throw new TRPCError({
+					code: 'INTERNAL_SERVER_ERROR',
+					message: `An error occured`,
+					cause: e,
+				})
+			}
+		}),
+
+	updateProject: publicProcedure
+		.input(
+			projectInputSchema.extend({
+				id: z.string(),
+			})
+		)
+		.mutation(async ({ ctx, input }) => {
+			try {
+				return await ctx.prisma.project.update({
+					where: {
+						id: input.id,
+					},
+					data: {
+						...input,
+					},
+					include: {
+						User: true,
+					},
 				})
 			} catch (e) {
 				throw new TRPCError({
@@ -37,6 +68,9 @@ export const projectRouter = createTRPCRouter({
 					orderBy: {
 						createdAt: 'desc',
 					},
+					include: {
+						User: true,
+					},
 				})
 			} catch (e) {
 				throw new TRPCError({
@@ -50,7 +84,10 @@ export const projectRouter = createTRPCRouter({
 		.input(z.object({ id: z.string() }))
 		.query(async ({ ctx, input }) => {
 			try {
-				return await ctx.prisma.project.findUnique({ where: { id: input.id } })
+				return await ctx.prisma.project.findUnique({
+					where: { id: input.id },
+					include: { User: true },
+				})
 			} catch (e) {
 				throw new TRPCError({
 					code: 'NOT_FOUND',
