@@ -2,6 +2,7 @@ import { TRPCError } from '@trpc/server'
 import { projectInputSchema } from '~/inputSchema'
 import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc'
 import { z } from 'zod'
+import { Project } from '@prisma/client'
 export const projectRouter = createTRPCRouter({
 	postProject: protectedProcedure
 		.input(projectInputSchema)
@@ -62,6 +63,7 @@ export const projectRouter = createTRPCRouter({
 		.query(async ({ ctx, input }) => {
 			try {
 				return await ctx.prisma.project.findMany({
+					// ToDo: hide protected fields from all users
 					where: {
 						approved: input.approved,
 						complete: input.complete ?? false,
@@ -85,13 +87,31 @@ export const projectRouter = createTRPCRouter({
 		.input(z.object({ id: z.string() }))
 		.query(async ({ ctx, input }) => {
 			try {
-				return await ctx.prisma.project.findUnique({
+				const project = await ctx.prisma.project.findUnique({
 					where: { id: input.id },
 					include: { User: true },
 				})
-			} catch (e) {
+
+				if (ctx.session.user.admin && project) {
+					return project
+				} else {
+					if (!project) {
+						throw new TRPCError({
+							code: 'NOT_FOUND',
+						})
+					}
+					if (project['userId'] === ctx.session.user.id) {
+						return project
+					} else {
+						throw new TRPCError({
+							code: 'UNAUTHORIZED',
+						})
+					}
+				}
+			} catch (e: unknown) {
+				const err = e as TRPCError
 				throw new TRPCError({
-					code: 'NOT_FOUND',
+					code: err.code,
 				})
 			}
 		}),

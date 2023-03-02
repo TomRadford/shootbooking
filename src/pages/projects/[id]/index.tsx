@@ -8,6 +8,12 @@ import { NeutralCard } from '~/components/common/Cards'
 import { budgetOptions } from '~/utils/common'
 import { toast } from 'react-toastify'
 import { andFormatter } from '~/utils/formatter'
+import { useSession } from 'next-auth/react'
+import { type projectInputSchema } from '~/inputSchema'
+import { type z } from 'zod'
+
+type ProjectInput = z.infer<typeof projectInputSchema>
+
 const AddPage = () => {
 	const router = useRouter()
 	const {
@@ -21,8 +27,32 @@ const AddPage = () => {
 		},
 		{ enabled: typeof router.query.id === 'string' }
 	)
+	const { data: sessionData } = useSession()
+	const utils = api.useContext()
+	const updateProject = api.project.updateProject.useMutation({
+		onSuccess: (data) => {
+			utils.project.getProject.setData({ id: data.id }, () => data)
+		},
+	})
 
-	const handleApproval = () => {
+	const handleApproval = async () => {
+		if (projectData && projectData.id) {
+			await toast.promise(
+				updateProject.mutateAsync({
+					...(projectData as ProjectInput),
+					id: projectData.id,
+					approved: !projectData.approved,
+				}),
+				{
+					error: 'Unable to set approval',
+					pending: 'Setting approval',
+					success: 'Approval status set!',
+				}
+			)
+		}
+	}
+
+	const handleApprovalRequest = () => {
 		const missingValues = []
 		if (!projectData?.jobNumber) {
 			missingValues.push('Job number')
@@ -39,13 +69,22 @@ const AddPage = () => {
 		if (!projectData?.finalisedConcept) {
 			missingValues.push('Concept needs to be finalised')
 		}
+		if (!projectData?.budget) {
+			missingValues.push('Budget')
+		}
+		// Add script urls check if script finalised
 
 		if (missingValues.length > 0) {
 			toast(
 				<>
-					Please fill in the following values before requesting approval:
+					Please fill in the following values for{' '}
+					<strong>{projectData?.name}</strong> before requesting approval:
 					<br />
-					<strong>{andFormatter.format(missingValues)}</strong>
+					<ul className=" list-inside list-disc">
+						{missingValues.map((val) => (
+							<li key={val}>{val}</li>
+						))}
+					</ul>
 				</>,
 				{ autoClose: false }
 			)
@@ -83,23 +122,61 @@ const AddPage = () => {
 							<>
 								<header className="flex w-full flex-col gap-2 rounded-md bg-gradient-to-b from-black to-neutral-800 px-10 pb-2 md:w-11/12">
 									<div className="flex flex-wrap justify-between">
-										<Link href={`/projects/${projectData.id}/edit`}>
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												fill="none"
-												viewBox="0 0 24 24"
-												strokeWidth={1.5}
-												stroke="currentColor"
-												className="h-6 w-6"
-											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
-												/>
-											</svg>
-										</Link>
-
+										<div className="flex gap-2">
+											{(sessionData?.user.admin || !projectData.approved) && (
+												<Link href={`/projects/${projectData.id}/edit`}>
+													<svg
+														xmlns="http://www.w3.org/2000/svg"
+														fill="none"
+														viewBox="0 0 24 24"
+														strokeWidth={1.5}
+														stroke="currentColor"
+														className="h-6 w-6"
+													>
+														<path
+															strokeLinecap="round"
+															strokeLinejoin="round"
+															d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+														/>
+													</svg>
+												</Link>
+											)}
+											{sessionData?.user.admin && (
+												<button onClick={handleApproval}>
+													{projectData.approved ? (
+														<svg
+															xmlns="http://www.w3.org/2000/svg"
+															fill="none"
+															viewBox="0 0 24 24"
+															strokeWidth={1.5}
+															stroke="currentColor"
+															className="h-6 w-6"
+														>
+															<path
+																strokeLinecap="round"
+																strokeLinejoin="round"
+																d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+															/>
+														</svg>
+													) : (
+														<svg
+															xmlns="http://www.w3.org/2000/svg"
+															fill="none"
+															viewBox="0 0 24 24"
+															strokeWidth={1.5}
+															stroke="currentColor"
+															className="h-6 w-6"
+														>
+															<path
+																strokeLinecap="round"
+																strokeLinejoin="round"
+																d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+															/>
+														</svg>
+													)}
+												</button>
+											)}
+										</div>
 										<div className="w-max rounded-xl border border-neutral-700  bg-neutral-900 px-3 text-center">
 											{projectData.shootType} shoot
 										</div>
@@ -161,12 +238,15 @@ const AddPage = () => {
 								</header>
 								<div className="mt-4 flex  flex-wrap justify-center gap-4 ">
 									<div className="flex flex-col gap-4">
-										<button
-											onClick={handleApproval}
-											className="mx-auto w-max rounded-md bg-slate-800 px-2 py-1 transition-colors hover:bg-green-800"
-										>
-											Submit for approval
-										</button>
+										{projectData.userId === sessionData?.user.id &&
+										!projectData.approved ? (
+											<button
+												onClick={handleApprovalRequest}
+												className="mx-auto w-max rounded-md bg-slate-800 px-2 py-1 transition-colors hover:bg-green-800"
+											>
+												Submit for approval
+											</button>
+										) : null}
 										<NeutralCard className="">
 											<div className="flex flex-col justify-between">
 												<div className="flex justify-between gap-2">

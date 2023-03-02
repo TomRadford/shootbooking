@@ -240,7 +240,7 @@ const EditProject = ({ project }: { project?: Project }) => {
 				label="Project Head"
 				value="head"
 				type="text"
-				required={false}
+				required={true}
 			/>
 			<Input
 				errors={errors}
@@ -275,7 +275,6 @@ const EditProject = ({ project }: { project?: Project }) => {
 				type="radio"
 				setValue={setValue}
 				options={budgetOptions}
-				required={true}
 			/>
 
 			<Input

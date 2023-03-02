@@ -19,9 +19,7 @@ export const projectInputSchema = z.object({
 	locations: z.string().optional().nullable(),
 	finalisedScript: z.boolean(),
 	scriptUrl: z.string().url().array().default([]),
-	budget: z.string({
-		invalid_type_error: 'Please select a budget, you can change this later',
-	}),
+	budget: z.string().optional().nullable(),
 	resources: z.array(z.string()),
 	shootStart: z.date().optional().nullable(),
 	shootEnd: z.date().optional().nullable(),
