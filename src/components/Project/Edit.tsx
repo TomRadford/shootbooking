@@ -327,7 +327,9 @@ const EditProject = ({ project }: { project?: Project }) => {
 				errors={errors}
 				register={register}
 				type="date"
-				label="Shoot start date"
+				label={
+					project?.approved ? 'Shoot start date' : 'Proposed shoot start date'
+				}
 				value="shootStart"
 				control={control}
 			/>
@@ -336,7 +338,9 @@ const EditProject = ({ project }: { project?: Project }) => {
 				errors={errors}
 				register={register}
 				type="date"
-				label="Shoot end date"
+				label={
+					project?.approved ? 'Shoot start date' : 'Proposed shoot end date'
+				}
 				value="shootEnd"
 				control={control}
 			/>

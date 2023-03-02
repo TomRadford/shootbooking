@@ -6,8 +6,8 @@ import { CircleLoader } from '~/components/common/LoadingSpinners'
 import Link from 'next/link'
 import { NeutralCard } from '~/components/common/Cards'
 import { budgetOptions } from '~/utils/common'
-import { useAddProjectToCache } from '~/utils/hooks/cache'
-
+import { toast } from 'react-toastify'
+import { andFormatter } from '~/utils/formatter'
 const AddPage = () => {
 	const router = useRouter()
 	const {
@@ -21,6 +21,46 @@ const AddPage = () => {
 		},
 		{ enabled: typeof router.query.id === 'string' }
 	)
+
+	const handleApproval = () => {
+		const missingValues = []
+		if (!projectData?.jobNumber) {
+			missingValues.push('Job number')
+		}
+		if (!projectData?.dueDate) {
+			missingValues.push('Due date')
+		}
+		if (!projectData?.shootStart) {
+			missingValues.push('Proposed Shoot start date')
+		}
+		if (!projectData?.shootEnd) {
+			missingValues.push('Proposed Shoot end date')
+		}
+		if (!projectData?.finalisedConcept) {
+			missingValues.push('Concept needs to be finalised')
+		}
+
+		if (missingValues.length > 0) {
+			toast(
+				<>
+					Please fill in the following values before requesting approval:
+					<br />
+					<strong>{andFormatter.format(missingValues)}</strong>
+				</>,
+				{ autoClose: false }
+			)
+			if (projectData?.id) {
+				void router.push(`/projects/${projectData?.id}/edit`)
+			}
+		}
+
+		// for (const property in projectData) {
+		// 	if (typeof)
+		// 	if (projectData[property].length === 0) {
+		// 		missingValues.push(property)
+		// 	}
+		// }
+	}
 
 	return (
 		<>
@@ -121,7 +161,10 @@ const AddPage = () => {
 								</header>
 								<div className="mt-4 flex  flex-wrap justify-center gap-4 ">
 									<div className="flex flex-col gap-4">
-										<button className="mx-auto w-max rounded-md bg-slate-800 px-2 py-1 transition-colors hover:bg-green-800">
+										<button
+											onClick={handleApproval}
+											className="mx-auto w-max rounded-md bg-slate-800 px-2 py-1 transition-colors hover:bg-green-800"
+										>
 											Submit for approval
 										</button>
 										<NeutralCard className="">
@@ -197,7 +240,9 @@ const AddPage = () => {
 													{projectData.shootBase}
 												</div>
 											</div>
-											<p>{projectData.locations}</p>
+											<p className="whitespace-pre-wrap">
+												{projectData.locations}
+											</p>
 										</div>
 									</NeutralCard>
 									<NeutralCard className="">
@@ -218,7 +263,9 @@ const AddPage = () => {
 												<div className="flex justify-between gap-2">
 													<h3 className="text-lg font-semibold">Concept</h3>
 												</div>
-												{projectData.concept}
+												<p className="whitespace-pre-wrap">
+													{projectData.concept}
+												</p>
 											</div>
 										</NeutralCard>
 									)}
@@ -252,7 +299,9 @@ const AddPage = () => {
 												<div className="flex justify-between gap-2">
 													<h3 className="text-lg font-semibold">Notes</h3>
 												</div>
-												{projectData.notes}
+												<p className="whitespace-pre-wrap">
+													{projectData.notes}
+												</p>
 											</div>
 										</NeutralCard>
 									)}

@@ -3,13 +3,14 @@ import { projectInputSchema } from '~/inputSchema'
 import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc'
 import { z } from 'zod'
 export const projectRouter = createTRPCRouter({
-	postProject: publicProcedure
+	postProject: protectedProcedure
 		.input(projectInputSchema)
 		.mutation(async ({ ctx, input }) => {
 			try {
 				return await ctx.prisma.project.create({
 					data: {
 						...input,
+						userId: ctx.session?.user.id,
 					},
 					include: {
 						User: true,
@@ -24,7 +25,7 @@ export const projectRouter = createTRPCRouter({
 			}
 		}),
 
-	updateProject: publicProcedure
+	updateProject: protectedProcedure
 		.input(
 			projectInputSchema.extend({
 				id: z.string(),
@@ -51,7 +52,7 @@ export const projectRouter = createTRPCRouter({
 				})
 			}
 		}),
-	getAll: publicProcedure
+	getAll: protectedProcedure
 		.input(
 			z.object({
 				approved: z.boolean(),
@@ -80,7 +81,7 @@ export const projectRouter = createTRPCRouter({
 				})
 			}
 		}),
-	getProject: publicProcedure
+	getProject: protectedProcedure
 		.input(z.object({ id: z.string() }))
 		.query(async ({ ctx, input }) => {
 			try {
