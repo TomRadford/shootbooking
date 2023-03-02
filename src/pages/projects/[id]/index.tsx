@@ -34,6 +34,7 @@ const AddPage = () => {
 			utils.project.getProject.setData({ id: data.id }, () => data)
 		},
 	})
+	const requestApproval = api.project.postApprovalRequest.useMutation()
 
 	const handleApproval = async () => {
 		if (projectData && projectData.id) {
@@ -52,7 +53,7 @@ const AddPage = () => {
 		}
 	}
 
-	const handleApprovalRequest = () => {
+	const handleApprovalRequest = async () => {
 		const missingValues = []
 		if (!projectData?.jobNumber) {
 			missingValues.push('Job number')
@@ -91,14 +92,19 @@ const AddPage = () => {
 			if (projectData?.id) {
 				void router.push(`/projects/${projectData?.id}/edit`)
 			}
+			return
 		}
-
-		// for (const property in projectData) {
-		// 	if (typeof)
-		// 	if (projectData[property].length === 0) {
-		// 		missingValues.push(property)
-		// 	}
-		// }
+		if (projectData?.id) {
+			await toast.promise(
+				requestApproval.mutateAsync({ id: projectData?.id }),
+				{
+					pending: 'Requesting approval',
+					error: 'Error requesting approval',
+					success:
+						'Approval has been requested! Keep an eye on your emails for approval notifcation.',
+				}
+			)
+		}
 	}
 
 	return (

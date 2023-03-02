@@ -17,6 +17,7 @@ import { CircleLoader } from '../common/LoadingSpinners'
 import { budgetOptions } from '~/utils/common'
 import { type inferRouterOutputs } from '@trpc/server'
 import { type AppRouter } from '~/server/api/root'
+import { toast } from 'react-toastify'
 
 type RouterOutput = inferRouterOutputs<AppRouter>
 
@@ -177,6 +178,20 @@ const EditProject = ({ project }: { project?: Project }) => {
 	const postProject = api.project.postProject.useMutation({
 		onSuccess: (data) => {
 			utils.project.getProject.setData({ id: data.id }, () => data)
+			toast(
+				<>
+					<strong>{data.name}</strong> created!
+					<br />
+					Click <strong>submit for approval</strong> once you have confirmed all
+					the shoot details and want to lock the project in!
+					<br />
+					<p className="text-sm  font-light">
+						Note that once the shoot has been approved you cant edit any
+						details!
+					</p>
+				</>,
+				{ autoClose: 6000 }
+			)
 			void router.push(`/projects/${data.id}`)
 		},
 	})

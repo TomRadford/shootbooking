@@ -2,7 +2,8 @@ import { TRPCError } from '@trpc/server'
 import { projectInputSchema } from '~/inputSchema'
 import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc'
 import { z } from 'zod'
-import { Project } from '@prisma/client'
+import { type Project } from '@prisma/client'
+import { sendRequestApproval } from '~/server/email/mailer'
 export const projectRouter = createTRPCRouter({
 	postProject: protectedProcedure
 		.input(projectInputSchema)
@@ -25,7 +26,39 @@ export const projectRouter = createTRPCRouter({
 				})
 			}
 		}),
-
+	postApprovalRequest: protectedProcedure
+		.input(z.object({ id: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			try {
+				const project = await ctx.prisma.project.findUnique({
+					where: {
+						id: input.id,
+					},
+				})
+				if (!project) {
+					throw new TRPCError({
+						code: 'NOT_FOUND',
+					})
+				}
+				const admins = await ctx.prisma.user.findMany({
+					where: {
+						admin: true,
+					},
+				})
+				const emails = admins.map((admin) => admin.email || '')
+				await sendRequestApproval({
+					username: ctx.session.user.name || 'unknown',
+					projectName: project.name,
+					id: project.id,
+					to: emails,
+				})
+			} catch (e: unknown) {
+				const err = e as TRPCError
+				throw new TRPCError({
+					code: err.code,
+				})
+			}
+		}),
 	updateProject: protectedProcedure
 		.input(
 			projectInputSchema.extend({
@@ -34,6 +67,7 @@ export const projectRouter = createTRPCRouter({
 		)
 		.mutation(async ({ ctx, input }) => {
 			try {
+				// ToDo: if approved === true then send user email confirming
 				return await ctx.prisma.project.update({
 					where: {
 						id: input.id,
