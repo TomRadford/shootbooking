@@ -3,7 +3,7 @@ import { projectInputSchema } from '~/inputSchema'
 import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc'
 import { z } from 'zod'
 import { type Project } from '@prisma/client'
-import { sendRequestApproval } from '~/server/email/mailer'
+import { sendProjectApproved, sendRequestApproval } from '~/server/email/mailer'
 export const projectRouter = createTRPCRouter({
 	postProject: protectedProcedure
 		.input(projectInputSchema)
@@ -63,17 +63,39 @@ export const projectRouter = createTRPCRouter({
 		.input(
 			projectInputSchema.extend({
 				id: z.string(),
+				notifyApproved: z.boolean().optional(),
 			})
 		)
 		.mutation(async ({ ctx, input }) => {
 			try {
 				// ToDo: if approved === true then send user email confirming
+
+				if (input.notifyApproved) {
+					const project = await ctx.prisma.project.findUnique({
+						where: {
+							id: input.id,
+						},
+						include: {
+							User: true,
+						},
+					})
+					if (project) {
+						await sendProjectApproved({
+							username: project.User?.name || '',
+							projectName: input.name,
+							id: input.id,
+							to: project?.User?.email || '',
+						})
+					}
+				}
+				const projectData = input
+				delete projectData['notifyApproved']
 				return await ctx.prisma.project.update({
 					where: {
 						id: input.id,
 					},
 					data: {
-						...input,
+						...projectData,
 					},
 					include: {
 						User: true,
@@ -84,6 +106,38 @@ export const projectRouter = createTRPCRouter({
 					code: 'INTERNAL_SERVER_ERROR',
 					message: `An error occured`,
 					cause: e,
+				})
+			}
+		}),
+	deleteProject: protectedProcedure
+		.input(z.object({ id: z.string() }))
+		.mutation(async ({ ctx, input }) => {
+			try {
+				if (!ctx.session.user.admin) {
+					throw new TRPCError({
+						code: 'UNAUTHORIZED',
+						message: 'Only admins can delete projects',
+					})
+				}
+				try {
+					await ctx.prisma.project.delete({
+						where: {
+							id: input.id,
+						},
+					})
+				} catch (e) {
+					throw new TRPCError({
+						code: 'INTERNAL_SERVER_ERROR',
+						message: 'An error occured',
+						cause: e,
+					})
+				}
+			} catch (e: unknown) {
+				const err = e as TRPCError
+				throw new TRPCError({
+					code: err.code,
+					message: err.message,
+					cause: err.cause,
 				})
 			}
 		}),

@@ -6,24 +6,23 @@ import Layout from '~/components/Layout'
 import ProjectTable from '~/components/Project/Table'
 import { api } from '~/utils/api'
 
-const ActivePage = () => {
+const CompletePage = () => {
 	const [filterByUser, setFilterByUser] = useState(false)
 	const { data: allPipelineProjects, isLoading } = api.project.getAll.useQuery({
+		complete: true,
 		approved: true,
 	})
 	const { data: sessionData } = useSession()
 	return (
 		<>
 			<Head>
-				<title>Active Projects | Shoot Booking</title>
+				<title>Complete Projects | Shoot Booking</title>
 			</Head>
 			<Layout>
 				<div className="w-full">
 					<div className="flex flex-col items-center">
-						<h1 className="mb-2 text-2xl font-bold">
-							Project Pipeline Summary
-						</h1>
-						<p>All approved live action shoots</p>
+						<h1 className="mb-2 text-2xl font-bold">Complete Projects</h1>
+						<p>All live action shoots marked as complete</p>
 						{!sessionData?.user.admin && (
 							<div className="mx-auto text-center">
 								<div className="mt-4 flex items-center justify-center gap-1">
@@ -61,4 +60,4 @@ const ActivePage = () => {
 	)
 }
 
-export default ActivePage
+export default CompletePage

@@ -190,7 +190,7 @@ const EditProject = ({ project }: { project?: Project }) => {
 						details!
 					</p>
 				</>,
-				{ autoClose: 6000 }
+				{ autoClose: 10000 }
 			)
 			void router.push(`/projects/${data.id}`)
 		},
@@ -210,6 +210,7 @@ const EditProject = ({ project }: { project?: Project }) => {
 			postProject.mutate(data)
 		}
 	}
+
 	console.log(errors)
 	console.log(watch())
 

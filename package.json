@@ -11,6 +11,8 @@
 		"email": "email dev --port 3004 --dir src/server/email/templates"
 	},
 	"dependencies": {
+		"@ebay/nice-modal-react": "^1.2.9",
+		"@headlessui/react": "^1.7.12",
 		"@hookform/resolvers": "^2.9.11",
 		"@next-auth/prisma-adapter": "^1.0.5",
 		"@prisma/client": "^4.9.0",

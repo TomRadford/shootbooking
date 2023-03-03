@@ -4,6 +4,45 @@ import Image from 'next/image'
 import { CircleLoader } from './common/LoadingSpinners'
 import { toast } from 'react-toastify'
 
+const Nav = () => {
+	const { data: sessionData, status } = useSession()
+	if (sessionData) {
+		return (
+			<div className="flex flex-wrap gap-2 font-bold ">
+				<Link className="hover:text-gray-300" href="/projects/add">
+					Add
+				</Link>
+				<Link className="hover:text-gray-300" href="/projects/pipeline">
+					Pipeline
+				</Link>
+				<Link className="hover:text-gray-300" href="/projects/active">
+					Active
+				</Link>
+				{sessionData.user.admin && (
+					<Link className="hover:text-gray-300" href="/projects/complete">
+						Complete
+					</Link>
+				)}
+				<Link href="/me">
+					<div className="group relative flex w-16 justify-center text-center">
+						<Image
+							src={sessionData.user.image ?? '/user.jpeg'}
+							alt={sessionData.user?.name ?? ''}
+							className="rounded-full"
+							width={30}
+							height={30}
+						/>
+						<div className="absolute -bottom-4 w-20 text-[0.5rem] opacity-0 transition-opacity group-hover:opacity-100">
+							{sessionData.user.name}
+						</div>
+					</div>
+				</Link>
+			</div>
+		)
+	}
+	return null
+}
+
 const Layout = ({ children }: { children: React.ReactNode }) => {
 	const { data: sessionData, status } = useSession()
 
@@ -22,34 +61,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 						</svg>
 						<h5 className="font-bold">Shoot Booking</h5>
 					</Link>
-					{sessionData && (
-						<div className="flex flex-wrap gap-2 font-bold ">
-							<Link className="hover:text-gray-300" href="/projects/add">
-								Add
-							</Link>
-							<Link className="hover:text-gray-300" href="/projects/pipeline">
-								Pipeline
-							</Link>
-							<Link className="hover:text-gray-300" href="/projects/active">
-								Active
-							</Link>
-							<Link href="/me">
-								<div className="group relative flex w-16 justify-center text-center">
-									<Image
-										src={sessionData.user.image ?? '/user.jpeg'}
-										alt={sessionData.user?.name ?? ''}
-										className="rounded-full"
-										width={30}
-										height={30}
-									/>
-
-									<div className="absolute -bottom-4 w-20 text-[0.5rem] opacity-0 transition-opacity group-hover:opacity-100">
-										{sessionData.user.name}
-									</div>
-								</div>
-							</Link>
-						</div>
-					)}
+					<Nav />
 				</div>
 			</nav>
 			<main className="mb-10 w-full">

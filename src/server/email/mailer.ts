@@ -24,3 +24,23 @@ export const sendRequestApproval = async ({
 		html: emailHtml,
 	})
 }
+
+export const sendProjectApproved = async ({
+	username,
+	projectName,
+	id,
+	to,
+}: {
+	username: string
+	projectName: string
+	id: string
+	to: string | string[]
+}) => {
+	const emailHtml = render(RequestApprovalMail({ username, projectName, id }))
+	await sendgrid.send({
+		from: { email: 'mail@em4224.rooftop-host.eu', name: 'Shoot Booking' },
+		to,
+		subject: `${projectName} has been approved!`,
+		html: emailHtml,
+	})
+}

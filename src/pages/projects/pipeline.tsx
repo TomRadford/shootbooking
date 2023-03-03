@@ -12,7 +12,7 @@ const PipelinePage = () => {
 		approved: false,
 	})
 	const { data: sessionData } = useSession()
-	console.log(allPipelineProjects)
+
 	return (
 		<>
 			<Head>

@@ -7,7 +7,7 @@ import { Button } from '@react-email/button'
 import { Tailwind } from '@react-email/tailwind'
 import { env } from '../../../env.mjs'
 
-export const RequestApprovalMail = ({
+export const ProjectApprovedMail = ({
 	username = 'User',
 	projectName = 'Shoot name',
 	id = '1234',
@@ -30,16 +30,18 @@ export const RequestApprovalMail = ({
 		>
 			<Container className="mt-10 flex flex-row justify-center rounded-xl bg-slate-900 p-5 text-center font-sans text-white">
 				<Heading as="h1" className=" ">
-					Approval Requested
+					Project approved
 				</Heading>
 				<Text>
-					{username} has requested approval for <strong>{projectName}</strong>
+					Hi {username}! Your requested for <strong>{projectName}</strong> to be
+					approved has been granted!
 				</Text>
+				<Text>The project has been moved into active phase in the system.</Text>
 				<Button
 					className="mx-auto flex w-32 justify-center rounded-lg bg-slate-800 py-1 px-2 text-center font-bold text-white"
 					href={`${env.NEXTAUTH_URL}/projects/${id}`}
 				>
-					Review project
+					View
 				</Button>
 			</Container>
 
@@ -57,4 +59,4 @@ export const RequestApprovalMail = ({
 	)
 }
 
-export default RequestApprovalMail
+export default ProjectApprovedMail

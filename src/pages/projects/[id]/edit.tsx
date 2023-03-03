@@ -1,5 +1,8 @@
+import { useSession } from 'next-auth/react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import { useEffect } from 'react'
+import { toast } from 'react-toastify'
 import { CircleLoader } from '~/components/common/LoadingSpinners'
 import Layout from '~/components/Layout'
 import EditProject from '~/components/Project/Edit'
@@ -7,7 +10,7 @@ import { api } from '~/utils/api'
 
 const AddPage = () => {
 	const router = useRouter()
-
+	const { data: sessionData } = useSession()
 	const {
 		data: projectData,
 		isLoading,
@@ -19,6 +22,20 @@ const AddPage = () => {
 		},
 		{ enabled: typeof router.query.id === 'string' }
 	)
+	useEffect(() => {
+		if (!projectData && !sessionData) {
+			return
+		}
+		if (projectData?.userId === sessionData?.user.id) {
+			if (!sessionData?.user.admin && projectData?.approved) {
+				void router.push(`/projects/${projectData.id}`)
+				toast(`Project has already been approved, you can't edit!`, {
+					type: 'error',
+					toastId: 'cantEdit',
+				})
+			}
+		}
+	}, [sessionData, projectData, router])
 	return (
 		<>
 			<Head>
