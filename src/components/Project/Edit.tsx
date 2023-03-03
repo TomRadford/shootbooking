@@ -197,6 +197,7 @@ const EditProject = ({ project }: { project?: Project }) => {
 	})
 	const updateProject = api.project.updateProject.useMutation({
 		onSuccess: (data) => {
+			toast.dismiss()
 			utils.project.getProject.setData({ id: data.id }, () => data)
 			void router.push(`/projects/${data.id}`)
 		},

@@ -110,9 +110,14 @@ const AddPage = () => {
 	return (
 		<>
 			<Head>
-				<title>
-					{projectData?.name} | {projectData?.client} | Shoot Booking
-				</title>
+				{!projectData ? (
+					<title>Loading Project | Shoot Booking</title>
+				) : (
+					<title>
+						{projectData && `${projectData?.name} | ${projectData?.client}`}|
+						Shoot Booking
+					</title>
+				)}
 			</Head>
 			<Layout>
 				<div className="w-full ">

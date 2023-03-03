@@ -1,5 +1,4 @@
 export const CircleLoader = ({ size = '45' }: { size?: string }) => (
-	// <!-- By Sam Herbert (@sherb), for everyone. More @ http://goo.gl/7AJzbL -->
 	<svg
 		width={size}
 		height={size}
