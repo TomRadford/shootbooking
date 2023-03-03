@@ -36,7 +36,9 @@ export const ProjectApprovedMail = ({
 					Hi {username}! Your requested for <strong>{projectName}</strong> to be
 					approved has been granted!
 				</Text>
-				<Text>The project has been moved into active phase in the system.</Text>
+				<Text>
+					The project has been moved into the active phase in the system.
+				</Text>
 				<Button
 					className="mx-auto flex w-32 justify-center rounded-lg bg-slate-800 py-1 px-2 text-center font-bold text-white"
 					href={`${env.NEXTAUTH_URL}/projects/${id}`}
