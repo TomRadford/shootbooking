@@ -8,14 +8,13 @@ const AddPage = () => {
 			<Head>
 				<title>Add Shoot | Shoot Booking</title>
 			</Head>
-			<Layout>
-				<div className="w-full">
-					<div className="flex flex-col items-center">
-						<h1 className="mb-2 text-2xl font-bold">Add Project to Pipeline</h1>
-						<EditProject />
-					</div>
+
+			<div className="w-full">
+				<div className="flex flex-col items-center">
+					<h1 className="mb-2 text-2xl font-bold">Add Project to Pipeline</h1>
+					<EditProject />
 				</div>
-			</Layout>
+			</div>
 		</>
 	)
 }

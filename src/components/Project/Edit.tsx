@@ -190,7 +190,7 @@ const EditProject = ({ project }: { project?: Project }) => {
 						details!
 					</p>
 				</>,
-				{ autoClose: 10000 }
+				{ autoClose: 10000, type: 'success' }
 			)
 			void router.push(`/projects/${data.id}`)
 		},

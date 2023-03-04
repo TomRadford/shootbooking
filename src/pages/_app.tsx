@@ -7,6 +7,7 @@ import '~/styles/globals.css'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import NiceModal from '@ebay/nice-modal-react'
+import Layout from '~/components/Layout'
 
 const MyApp: AppType<{ session: Session | null }> = ({
 	Component,
@@ -15,7 +16,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
 	return (
 		<SessionProvider session={session}>
 			<NiceModal.Provider>
-				<Component {...pageProps} />
+				<Layout>
+					<Component {...pageProps} />
+				</Layout>
 			</NiceModal.Provider>
 			<ReactQueryDevtools />
 			<ToastContainer

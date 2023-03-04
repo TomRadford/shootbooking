@@ -18,44 +18,43 @@ const CompletePage = () => {
 			<Head>
 				<title>Complete Projects | Shoot Booking</title>
 			</Head>
-			<Layout>
-				<div className="w-full">
-					<div className="flex flex-col items-center">
-						<h1 className="mb-2 text-2xl font-bold">Complete Projects</h1>
-						<p>All live action shoots marked as complete</p>
-						{!sessionData?.user.admin && (
-							<div className="mx-auto text-center">
-								<div className="mt-4 flex items-center justify-center gap-1">
-									<input
-										type="checkbox"
-										id="filter"
-										checked={filterByUser}
-										onChange={() => setFilterByUser(!filterByUser)}
-									/>
-									<label htmlFor="filter">Only show my projects</label>
-								</div>
-							</div>
-						)}
-						<div className="mt-10">
-							{isLoading ? (
-								<CircleLoader size="100" />
-							) : allPipelineProjects ? (
-								<ProjectTable
-									projects={
-										filterByUser
-											? allPipelineProjects.filter(
-													(project) => project.userId === sessionData?.user.id
-											  )
-											: allPipelineProjects
-									}
+
+			<div className="w-full">
+				<div className="flex flex-col items-center">
+					<h1 className="mb-2 text-2xl font-bold">Complete Projects</h1>
+					<p>All live action shoots marked as complete</p>
+					{!sessionData?.user.admin && (
+						<div className="mx-auto text-center">
+							<div className="mt-4 flex items-center justify-center gap-1">
+								<input
+									type="checkbox"
+									id="filter"
+									checked={filterByUser}
+									onChange={() => setFilterByUser(!filterByUser)}
 								/>
-							) : (
-								<p>Unable to fetch pipeline projects</p>
-							)}
+								<label htmlFor="filter">Only show my projects</label>
+							</div>
 						</div>
+					)}
+					<div className="mt-10">
+						{isLoading ? (
+							<CircleLoader size="100" />
+						) : allPipelineProjects ? (
+							<ProjectTable
+								projects={
+									filterByUser
+										? allPipelineProjects.filter(
+												(project) => project.userId === sessionData?.user.id
+										  )
+										: allPipelineProjects
+								}
+							/>
+						) : (
+							<p>Unable to fetch pipeline projects</p>
+						)}
 					</div>
 				</div>
-			</Layout>
+			</div>
 		</>
 	)
 }

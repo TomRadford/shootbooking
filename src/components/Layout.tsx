@@ -5,10 +5,10 @@ import { CircleLoader } from './common/LoadingSpinners'
 import { toast } from 'react-toastify'
 
 const Nav = () => {
-	const { data: sessionData, status } = useSession()
+	const { data: sessionData } = useSession()
 	if (sessionData) {
 		return (
-			<div className="flex flex-wrap gap-2 font-bold ">
+			<div className="flex flex-wrap gap-2 font-bold md:gap-5">
 				<Link className="hover:text-gray-300" href="/projects/add">
 					Add
 				</Link>
