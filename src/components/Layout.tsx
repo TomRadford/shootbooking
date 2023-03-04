@@ -9,8 +9,11 @@ const Nav = () => {
 	if (sessionData) {
 		return (
 			<div className="flex flex-wrap gap-2 font-bold md:gap-5">
+				<Link className="hover:text-gray-300" href="/">
+					Calendar
+				</Link>
 				<Link className="hover:text-gray-300" href="/projects/add">
-					Add
+					Submit
 				</Link>
 				<Link className="hover:text-gray-300" href="/projects/pipeline">
 					Pipeline
@@ -59,7 +62,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 						>
 							<polygon points="0.1,76.5 44.2,49.5 88.4,76.5 44.2,63.3" />
 						</svg>
-						<h5 className="font-bold">Shoot Booking</h5>
 					</Link>
 					<Nav />
 				</div>

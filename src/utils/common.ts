@@ -1,4 +1,5 @@
 export const budgetOptions = [
+	'Unkown',
 	'R < 50 000',
 	'R 50 - 60 000',
 	'R 60 - 70 000',

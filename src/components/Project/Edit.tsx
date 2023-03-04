@@ -18,6 +18,7 @@ import { budgetOptions } from '~/utils/common'
 import { type inferRouterOutputs } from '@trpc/server'
 import { type AppRouter } from '~/server/api/root'
 import { toast } from 'react-toastify'
+import { Listbox, Transition } from '@headlessui/react'
 
 type RouterOutput = inferRouterOutputs<AppRouter>
 
@@ -65,6 +66,11 @@ const Input = (
 				type: 'date'
 				control: Control<ProjectInput>
 		  })
+		| (Omit<inputType, 'type'> & {
+				type: 'listbox'
+				control: Control<ProjectInput>
+				options: string[]
+		  })
 ) => {
 	if (props.type === 'yesNo') {
 		return (
@@ -102,11 +108,128 @@ const Input = (
 					name={props.value}
 					render={({ field }) => (
 						<DatePicker
-							className="w-full"
+							className="w-full border-[1px] py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out focus:border-zinc-300 focus:outline-none"
 							selected={field.value as Date}
 							onChange={field.onChange}
 							dateFormat="dd MMMM YYY"
 						/>
+					)}
+				/>
+			</div>
+		)
+	}
+
+	if (props.type === 'listbox') {
+		return (
+			<div className="flex flex-col">
+				<label>
+					{props.label}
+					{props.required && <span className="text-red-500">*</span>}{' '}
+					<span className="text-sm text-orange-500">
+						{props.errors[props.value]?.message}
+					</span>
+				</label>
+				<Controller
+					control={props.control}
+					name={props.value}
+					defaultValue={0}
+					render={({ field }) => (
+						<Listbox
+							as="div"
+							className="space-y-1"
+							value={field.value}
+							onChange={field.onChange}
+						>
+							{({ open }) => (
+								<>
+									<div className="relative">
+										<span className="inline-block w-full rounded-md shadow-sm">
+											<Listbox.Button className="focus:shadow-outline-blue relative w-full cursor-default rounded-md border border-zinc-700 bg-black py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out focus:border-zinc-300 focus:outline-none ">
+												<span className="block truncate">
+													{field.value === null || field.value === -1
+														? 'Select a budget range'
+														: typeof field.value === 'number'
+														? props.options[field.value]
+														: undefined}
+												</span>
+												<span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+													<svg
+														className="h-5 w-5 text-gray-400"
+														viewBox="0 0 20 20"
+														fill="none"
+														stroke="currentColor"
+													>
+														<path
+															d="M7 7l3-3 3 3m0 6l-3 3-3-3"
+															strokeWidth="1.5"
+															strokeLinecap="round"
+															strokeLinejoin="round"
+														/>
+													</svg>
+												</span>
+											</Listbox.Button>
+										</span>
+										<Transition
+											show={open}
+											leave="transition ease-in duration-100"
+											leaveFrom="opacity-100"
+											leaveTo="opacity-0"
+											className="absolute z-10 mt-1 w-full rounded-md bg-zinc-900 shadow-lg"
+										>
+											<Listbox.Options
+												static
+												className="shadow-xs max-h-60 overflow-auto rounded-md py-1 text-base leading-6 focus:outline-none sm:text-sm sm:leading-5"
+											>
+												{props.options.map((option, i) => (
+													<Listbox.Option
+														key={option}
+														value={props.value === 'budget' ? i : option}
+													>
+														{({ selected, active }) => (
+															<div
+																className={`${
+																	active
+																		? 'bg-blue-600 text-white'
+																		: 'text-white'
+																} relative cursor-default select-none py-2 pl-8 pr-4`}
+															>
+																<span
+																	className={`${
+																		selected ? 'font-semibold' : 'font-normal'
+																	} block truncate`}
+																>
+																	{option}
+																</span>
+																{selected && (
+																	<span
+																		className={`${
+																			active ? 'text-white' : 'text-blue-600'
+																		} absolute inset-y-0 left-0 flex items-center pl-1.5`}
+																	>
+																		<svg
+																			className="h-5 w-5"
+																			xmlns="http://www.w3.org/2000/svg"
+																			viewBox="0 0 20 20"
+																			fill="currentColor"
+																		>
+																			<path
+																				fillRule="evenodd"
+																				d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+																				clipRule="evenodd"
+																			/>
+																		</svg>
+																	</span>
+																)}
+															</div>
+														)}
+													</Listbox.Option>
+												))}
+											</Listbox.Options>
+										</Transition>
+									</div>
+								</>
+							)}
+						</Listbox>
 					)}
 				/>
 			</div>
@@ -149,10 +272,26 @@ const Input = (
 				</span>
 			</label>
 			{props.type === 'textarea' ? (
-				<textarea rows={4} {...props.register(props.value)} />
+				<textarea
+					rows={4}
+					{...props.register(props.value)}
+					className="border-[1px] py-2 pl-3 pr-10 text-left transition duration-150 ease-in-out focus:border-zinc-300 focus:outline-none"
+				/>
+			) : props.type === 'number' ? (
+				<input
+					type={props.type}
+					min={0}
+					defaultValue={0}
+					{...props.register(props.value, { valueAsNumber: true })}
+					className="border-[1px] py-2 pl-3 pr-10 text-left outline-0 transition duration-150 ease-in-out focus:border-zinc-300 focus:outline-none"
+				/>
 			) : (
-				// fallthrough to this catchall for text/date
-				<input type={props.type} {...props.register(props.value)} />
+				// fallthrough to this catchall for text
+				<input
+					type={props.type}
+					{...props.register(props.value)}
+					className="border-[1px] py-2 pl-3 pr-10 text-left outline-0 transition duration-150 ease-in-out focus:border-zinc-300 focus:outline-none"
+				/>
 			)}
 		</div>
 	)
@@ -207,7 +346,7 @@ const EditProject = ({ project }: { project?: Project }) => {
 		if (project) {
 			updateProject.mutate({ ...data, id: project.id })
 		} else {
-			postProject.mutate(data)
+			postProject.mutate({ ...data })
 		}
 	}
 
@@ -217,7 +356,7 @@ const EditProject = ({ project }: { project?: Project }) => {
 	return (
 		<form
 			onSubmit={handleSubmit(onSubmit)}
-			className="flex w-9/12 flex-col gap-3 rounded-xl border-2 border-zinc-700 p-3"
+			className="flex w-9/12 flex-col gap-3 rounded-xl border-2 border-zinc-700 p-3 "
 		>
 			<Input
 				errors={errors}
@@ -289,9 +428,10 @@ const EditProject = ({ project }: { project?: Project }) => {
 				register={register}
 				label="Estimated budget for the shoot"
 				value="budget"
-				type="radio"
+				type="listbox"
 				setValue={setValue}
 				options={budgetOptions}
+				control={control}
 			/>
 
 			<Input
@@ -312,6 +452,26 @@ const EditProject = ({ project }: { project?: Project }) => {
 					'Driver',
 				]}
 			/>
+			{watch().resources.find((value) => value === 'Actors') && (
+				<Input
+					errors={errors}
+					register={register}
+					label="How many actors?"
+					value="actorsCount"
+					type="number"
+					required
+				/>
+			)}
+			{watch().resources.find((value) => value === 'Extras') && (
+				<Input
+					errors={errors}
+					register={register}
+					label="How many extras?"
+					value="extrasCount"
+					type="number"
+					required
+				/>
+			)}
 			<Input
 				errors={errors}
 				register={register}
@@ -368,10 +528,16 @@ const EditProject = ({ project }: { project?: Project }) => {
 				value="notes"
 				type="textarea"
 			/>
+
 			{!(postProject.isLoading || updateProject.isLoading) ? (
-				<button type="submit" className="font-bold">
-					{project ? `Edit` : `Create`} Project
-				</button>
+				<div className="flex justify-center">
+					<button
+						type="submit"
+						className="w-max rounded-md border bg-slate-800 px-2 font-bold transition-colors hover:bg-slate-700"
+					>
+						{project ? ` Update` : `Create`} Project
+					</button>
+				</div>
 			) : (
 				<div className="mx-auto">
 					<CircleLoader size="50" />

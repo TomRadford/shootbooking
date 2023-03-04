@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import Layout from '~/components/Layout'
 import { api } from '~/utils/api'
 import { CircleLoader } from '~/components/common/LoadingSpinners'
 import Link from 'next/link'
@@ -141,6 +140,20 @@ const AddPage = () => {
 		if (!projectData?.budget) {
 			missingValues.push('Budget')
 		}
+		if (projectData?.resources) {
+			if (
+				projectData.resources.find((value) => value === 'Extras') &&
+				!projectData?.extrasCount
+			) {
+				missingValues.push('Number of extras')
+			}
+			if (
+				projectData.resources.find((value) => value === 'Actors') &&
+				!projectData?.actorsCount
+			) {
+				missingValues.push('Number of actors')
+			}
+		}
 		// Add script urls check if script finalised
 
 		if (missingValues.length > 0) {
@@ -220,7 +233,7 @@ const AddPage = () => {
 														/>
 													</svg>
 												</Link>
-												<div className="absolute -left-5 w-[3rem] rounded-md border border-zinc-700 bg-black px-2 py-1 text-center text-xs opacity-0 group-hover:opacity-100">
+												<div className="absolute -left-3 w-[3rem] rounded-md border border-zinc-700 bg-black px-2 py-1 text-center text-xs opacity-0 group-hover:opacity-100">
 													Edit
 												</div>
 											</div>
@@ -329,8 +342,9 @@ const AddPage = () => {
 											</>
 										)}
 									</div>
-									<div className="w-max rounded-xl px-3 text-center text-lg font-bold">
-										{projectData.shootType} shoot
+									<div className="w-max rounded-xl px-3 text-center text-lg">
+										<span className="font-bold">{projectData.shootType}</span>{' '}
+										shoot
 									</div>
 
 									<div className="flex">
@@ -456,7 +470,7 @@ const AddPage = () => {
 											</div>
 											<p className="text-center">
 												{projectData.budget
-													? budgetOptions[parseInt(projectData.budget)]
+													? budgetOptions[projectData.budget]
 													: 'None'}
 											</p>
 										</div>
@@ -486,7 +500,15 @@ const AddPage = () => {
 										</div>
 										<ul className="list-inside list-disc">
 											{projectData.resources.map((resource, i) => (
-												<li key={i}>{resource}</li>
+												<li key={i}>
+													{resource}{' '}
+													{resource === 'Actors' && (
+														<>({projectData.actorsCount})</>
+													)}
+													{resource === 'Extras' && (
+														<>({projectData.extrasCount})</>
+													)}
+												</li>
 											))}
 										</ul>
 									</div>

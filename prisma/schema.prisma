@@ -82,8 +82,10 @@ model Project {
   locations        String?   @db.Text
   finalisedScript  Boolean   @default(false)
   scriptUrl        String[]
-  budget           String?
+  budget           Int?
   resources        String[]
+  actorsCount      Int       @default(0)
+  extrasCount      Int       @default(0)
   shootStart       DateTime?
   shootEnd         DateTime?
   dueDate          DateTime?
