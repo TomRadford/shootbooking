@@ -51,8 +51,8 @@ export const ProjectsCalendar = () => {
 					.filter((project) => project.shootStart && project.shootEnd)
 					.map((project) => ({
 						id: `${project.id}`,
-						startAt: project.shootStart.toISOString(),
-						endAt: project.shootEnd.toISOString(),
+						startAt: (project.shootStart as Date).toISOString(),
+						endAt: (project.shootEnd as Date).toISOString(),
 						summary: `${project.approved ? 'Active' : 'Pipeline'} Shoot: ${
 							project.name
 						} | ${project.client}`,
@@ -62,8 +62,8 @@ export const ProjectsCalendar = () => {
 					.filter((project) => project.dueDate)
 					.map((project) => ({
 						id: `${project.id}`,
-						startAt: project.dueDate.toISOString(),
-						endAt: project.dueDate.toISOString(),
+						startAt: (project.dueDate as Date).toISOString(),
+						endAt: (project.dueDate as Date).toISOString(),
 						summary: `Deadline: ${project.name} | ${project.client}`,
 						color: '#ae1414',
 					})),
