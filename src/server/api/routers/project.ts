@@ -144,7 +144,7 @@ export const projectRouter = createTRPCRouter({
 	getAll: protectedProcedure
 		.input(
 			z.object({
-				approved: z.boolean(),
+				approved: z.boolean().optional(),
 				complete: z.boolean().optional(),
 			})
 		)
@@ -153,7 +153,7 @@ export const projectRouter = createTRPCRouter({
 				return await ctx.prisma.project.findMany({
 					// ToDo: hide protected fields from all users
 					where: {
-						approved: input.approved,
+						approved: input.approved ?? undefined,
 						complete: input.complete ?? false,
 					},
 					orderBy: {

@@ -311,7 +311,15 @@ const EditProject = ({ project }: { project?: Project }) => {
 		resolver: zodResolver(projectInputSchema),
 		defaultValues: project
 			? (project as unknown as ProjectInput)
-			: { resources: [], scriptUrl: [], approved: false, locations: '' },
+			: {
+					resources: [],
+					scriptUrl: [],
+					approved: false,
+					locations: '',
+					actorsCount: 0,
+					extrasCount: 0,
+					locationCount: 0,
+			  },
 	})
 	const utils = api.useContext()
 	const postProject = api.project.postProject.useMutation({

@@ -353,7 +353,7 @@ const AddPage = () => {
 												projectData.approved ? ` bg-green-800` : ` bg-slate-900`
 											}`}
 										>
-											{projectData.approved ? 'Approved' : 'Pipeline'}
+											{projectData.approved ? 'Active' : 'Pipeline'}
 										</div>
 										{projectData.complete && (
 											<div className="ml-2 w-max rounded-xl border border-neutral-700  bg-stone-800 px-3  text-center">

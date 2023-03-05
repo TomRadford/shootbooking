@@ -67,7 +67,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 				</div>
 			</nav>
 			<main className="mb-10 w-full">
-				<div className="mx-auto max-w-6xl">
+				<div className="mx-auto max-w-7xl">
 					{status === 'loading' ? (
 						<div className="flex justify-center">
 							<CircleLoader size="100" />
