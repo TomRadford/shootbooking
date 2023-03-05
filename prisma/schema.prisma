@@ -79,7 +79,8 @@ model Project {
   head             String
   finalisedConcept Boolean   @default(false)
   concept          String?   @db.Text
-  locations        String?   @db.Text
+  locations        String    @default("") @db.Text
+  locationCount    Int       @default(0)
   finalisedScript  Boolean   @default(false)
   scriptUrl        String[]
   budget           Int?

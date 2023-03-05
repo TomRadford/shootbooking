@@ -37,10 +37,14 @@ export const RequestApprovalMail = ({
 				</Text>
 				<Button
 					className="mx-auto flex w-32 justify-center rounded-lg bg-slate-800 py-1 px-2 text-center font-bold text-white"
-					href={`${env.NEXTAUTH_URL}/projects/${id}`}
+					href={`${env.BASE_URL}/projects/${id}`}
 				>
 					Review project
 				</Button>
+				<Text className=" text-xs font-light">
+					Alternativley copy this URL into your browser: <br />{' '}
+					{`${env.BASE_URL}/projects/${id}`}
+				</Text>
 			</Container>
 
 			<Text className="text-center font-sans text-xs text-white">

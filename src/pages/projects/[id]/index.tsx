@@ -195,7 +195,7 @@ const AddPage = () => {
 					<title>Loading Project | Shoot Booking</title>
 				) : (
 					<title>
-						{projectData && `${projectData?.name} | ${projectData?.client}`}|
+						{projectData && `${projectData?.name} | ${projectData?.client} `}|
 						Shoot Booking
 					</title>
 				)}
@@ -480,14 +480,21 @@ const AddPage = () => {
 									<div className="flex flex-col justify-between">
 										<div className="flex justify-between gap-2">
 											<h3 className="text-lg font-semibold underline">
-												Locations
+												Locations{' '}
+												{projectData.locations.length > 0
+													? projectData.locationCount > 0 && (
+															<>({projectData.locationCount})</>
+													  )
+													: ''}
 											</h3>
 											<div className="w-max rounded-xl border border-neutral-700  bg-neutral-900 px-3 text-center">
 												{projectData.shootBase}
 											</div>
 										</div>
 										<p className="whitespace-pre-wrap">
-											{projectData.locations}
+											{projectData.locations?.length === 0
+												? 'No locations yet'
+												: projectData.locations}
 										</p>
 									</div>
 								</NeutralCard>

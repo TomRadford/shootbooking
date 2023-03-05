@@ -311,7 +311,7 @@ const EditProject = ({ project }: { project?: Project }) => {
 		resolver: zodResolver(projectInputSchema),
 		defaultValues: project
 			? (project as unknown as ProjectInput)
-			: { resources: [], scriptUrl: [], approved: false },
+			: { resources: [], scriptUrl: [], approved: false, locations: '' },
 	})
 	const utils = api.useContext()
 	const postProject = api.project.postProject.useMutation({
@@ -489,15 +489,15 @@ const EditProject = ({ project }: { project?: Project }) => {
 				value="locations"
 				type="textarea"
 			/>
-
-			<Input
-				errors={errors}
-				register={register}
-				type="date"
-				label="Due date/Deadline"
-				value="dueDate"
-				control={control}
-			/>
+			{watch().locations.length > 0 && (
+				<Input
+					errors={errors}
+					register={register}
+					label="Estimated number of locations"
+					type="number"
+					value="locationCount"
+				/>
+			)}
 
 			<Input
 				errors={errors}
@@ -518,6 +518,15 @@ const EditProject = ({ project }: { project?: Project }) => {
 					project?.approved ? 'Shoot start date' : 'Proposed shoot end date'
 				}
 				value="shootEnd"
+				control={control}
+			/>
+
+			<Input
+				errors={errors}
+				register={register}
+				type="date"
+				label="Due date/Deadline"
+				value="dueDate"
 				control={control}
 			/>
 

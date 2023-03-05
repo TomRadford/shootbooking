@@ -23,6 +23,7 @@ const server = z.object({
 	AZURE_AD_CLIENT_SECRET: z.string(),
 	AZURE_AD_TENANT_ID: z.string(),
 	SENDGRID_API_KEY: z.string(),
+	BASE_URL: z.string(),
 })
 
 /**
@@ -48,6 +49,7 @@ const processEnv = {
 	AZURE_AD_CLIENT_SECRET: process.env.AZURE_AD_CLIENT_SECRET,
 	AZURE_AD_TENANT_ID: process.env.AZURE_AD_TENANT_ID,
 	SENDGRID_API_KEY: process.env.SENDGRID_API_KEY,
+	BASE_URL: process.env.BASE_URL,
 	// NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 }
 
