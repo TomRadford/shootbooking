@@ -3,6 +3,7 @@ import { signIn, signOut, useSession } from 'next-auth/react'
 import Image from 'next/image'
 import { CircleLoader } from './common/LoadingSpinners'
 import { toast } from 'react-toastify'
+import Head from 'next/head'
 
 const Nav = () => {
 	const { data: sessionData } = useSession()
@@ -69,31 +70,41 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 			<main className="mb-10 w-full">
 				<div className="mx-auto max-w-7xl">
 					{status === 'loading' ? (
-						<div className="flex justify-center">
-							<CircleLoader size="100" />
-						</div>
+						<>
+							<Head>
+								<title>Shoot Booking App</title>
+							</Head>
+							<div className="flex justify-center">
+								<CircleLoader size="100" />
+							</div>
+						</>
 					) : sessionData ? (
 						children
 					) : (
-						<div className="mx-auto text-center">
-							<h1 className="text-4xl font-bold">Welcome!</h1>
-							<p className="my-3 font-thin">
-								This application requires you to sign in with your Microsoft
-								account:
-							</p>
-							<button
-								onClick={async () => {
-									await toast.promise(signIn('azure-ad'), {
-										pending: 'Logging in!',
-										error: 'Error logging in!',
-										success: 'You should be redirected soon!',
-									})
-								}}
-								className="rounded-md border border-stone-600 bg-neutral-800 py-1 px-1 transition-colors  hover:bg-neutral-900"
-							>
-								Sign in
-							</button>
-						</div>
+						<>
+							<Head>
+								<title>Login | Shoot Booking App</title>
+							</Head>
+							<div className="mx-auto text-center">
+								<h1 className="text-4xl font-bold">Welcome!</h1>
+								<p className="my-3 font-thin">
+									This application requires you to sign in with your Microsoft
+									account:
+								</p>
+								<button
+									onClick={async () => {
+										await toast.promise(signIn('azure-ad'), {
+											pending: 'Logging in!',
+											error: 'Error logging in!',
+											success: 'You should be redirected soon!',
+										})
+									}}
+									className="rounded-md border border-stone-600 bg-neutral-800 py-1 px-1 transition-colors  hover:bg-neutral-900"
+								>
+									Sign in
+								</button>
+							</div>
+						</>
 					)}
 				</div>
 			</main>
