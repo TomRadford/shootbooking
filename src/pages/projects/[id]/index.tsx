@@ -14,7 +14,7 @@ import Modal from '~/components/common/Modal'
 
 type ProjectInput = z.infer<typeof projectInputSchema>
 
-const AddPage = () => {
+const ProjectPage = () => {
 	const router = useRouter()
 	const {
 		data: projectData,
@@ -419,7 +419,7 @@ const AddPage = () => {
 											</div>
 											<ul>
 												<li className="flex justify-between">
-													<p>Due:</p>
+													<p>First Draft:</p>
 													<p className="text-right font-bold">
 														{projectData.dueDate?.toLocaleDateString('en-GB', {
 															day: 'numeric',
@@ -586,4 +586,4 @@ const AddPage = () => {
 	)
 }
 
-export default AddPage
+export default ProjectPage

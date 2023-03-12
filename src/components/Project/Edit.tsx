@@ -358,8 +358,8 @@ const EditProject = ({ project }: { project?: Project }) => {
 		}
 	}
 
-	console.log(errors)
-	console.log(watch())
+	// console.log(errors)
+	// console.log(watch())
 
 	return (
 		<form
@@ -533,7 +533,7 @@ const EditProject = ({ project }: { project?: Project }) => {
 				errors={errors}
 				register={register}
 				type="date"
-				label="Due date/Deadline"
+				label="Fist draft due date"
 				value="dueDate"
 				control={control}
 			/>

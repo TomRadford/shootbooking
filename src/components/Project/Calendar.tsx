@@ -1,39 +1,37 @@
-import { type inferRouterOutputs } from '@trpc/server'
-import Kalend, {
-	type CalendarEvent,
-	CalendarView,
-	type OnEventClickData,
-} from 'kalend'
-import { type AppRouter } from '~/server/api/root'
+import Kalend, { CalendarView, type OnEventClickData } from 'kalend'
 import 'kalend/dist/styles/index.css' // import styles
 import { api } from '~/utils/api'
-import { useEffect, useState } from 'react'
-import { CALENDAR_EVENT_TYPE } from 'kalend/common/enums'
-import useHasMounted from '~/utils/hooks/mounted'
-import { useRouter } from 'next/router'
-import { useSession } from 'next-auth/react'
-
-type RouterOutput = inferRouterOutputs<AppRouter>
-
-type Project = RouterOutput['project']['getAll'][0]
+import NiceModal from '@ebay/nice-modal-react'
+import ProjectModal from '../common/ProjectModal'
+import { useProjectsStore } from '~/utils/store/projects'
+import { useEffect } from 'react'
 
 // data fetching done in ProjectsCalendar to be able allow for lazy loading
 export const ProjectsCalendar = () => {
 	const {
 		data: projectsData,
 		isLoading,
-		isRefetching,
 		isFetching,
 		isError,
 		error,
 	} = api.project.getAll.useQuery({})
-	const router = useRouter()
-	const { data: sessionData } = useSession()
-	const onEventClick = (eventData: OnEventClickData) => {
-		console.log(eventData.id)
-		if (sessionData?.user.admin) {
-			void router.push(`/projects/${eventData.id as string}`)
+	const setProjectsStore = useProjectsStore((state) => state.setProjects)
+
+	useEffect(() => {
+		if (!isLoading && !isFetching) {
+			if (projectsData) {
+				setProjectsStore(projectsData)
+			}
 		}
+		return () => setProjectsStore([])
+	}, [projectsData, isLoading, isFetching, setProjectsStore])
+
+	const onEventClick = async (eventData: OnEventClickData) => {
+		const idToFind = (eventData.id as string)
+			.replace('-startEnd', '')
+			.replace('-due', '')
+
+		await NiceModal.show(ProjectModal, { projectId: idToFind })
 	}
 
 	if (isError) {
@@ -50,7 +48,7 @@ export const ProjectsCalendar = () => {
 				...projectsData
 					.filter((project) => project.shootStart && project.shootEnd)
 					.map((project) => ({
-						id: `${project.id}`,
+						id: `${project.id}-startEnd`,
 						startAt: (project.shootStart as Date).toISOString(),
 						endAt: (project.shootEnd as Date).toISOString(),
 						summary: `${project.approved ? 'Active' : 'Pipeline'} Shoot: ${
@@ -61,7 +59,7 @@ export const ProjectsCalendar = () => {
 				...projectsData
 					.filter((project) => project.dueDate)
 					.map((project) => ({
-						id: `${project.id}`,
+						id: `${project.id}-due`,
 						startAt: (project.dueDate as Date).toISOString(),
 						endAt: (project.dueDate as Date).toISOString(),
 						summary: `Deadline: ${project.name} | ${project.client}`,

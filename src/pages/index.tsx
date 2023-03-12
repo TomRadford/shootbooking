@@ -2,7 +2,6 @@ import { type NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import { ProjectsCalendar } from '~/components/Project/Calendar'
-import useHasMounted from '~/utils/hooks/mounted'
 
 const Home: NextPage = () => {
 	return (
