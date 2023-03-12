@@ -119,14 +119,14 @@ const ProjectModal = NiceModal.create(
 										</div>
 										<div className="mt-2 flex justify-center gap-2">
 											{sessionData?.user.admin ||
-												(project.userId === sessionData?.user.id && (
-													<button
-														className="border-stone-600py-1 rounded-md border px-1 transition-colors  hover:bg-neutral-800"
-														onClick={onClick}
-													>
-														Details
-													</button>
-												))}
+											project.userId === sessionData?.user.id ? (
+												<button
+													className="border-stone-600py-1 rounded-md border px-1 transition-colors  hover:bg-neutral-800"
+													onClick={onClick}
+												>
+													Details
+												</button>
+											) : null}
 											<button
 												className="border-stone-600py-1 rounded-md border px-1 transition-colors  hover:bg-neutral-800"
 												onClick={() => modal.hide()}
