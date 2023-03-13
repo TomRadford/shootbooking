@@ -20,7 +20,7 @@ const ActivePage = () => {
 
 			<div className="w-full">
 				<div className="flex flex-col items-center">
-					<h1 className="mb-2 text-2xl font-bold">Project Pipeline Summary</h1>
+					<h1 className="mb-2 text-2xl font-bold">Active Project Summary</h1>
 					<p>All approved live action shoots</p>
 					{!sessionData?.user.admin && (
 						<div className="mx-auto text-center">
