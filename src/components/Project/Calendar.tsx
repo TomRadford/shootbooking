@@ -1,4 +1,8 @@
-import Kalend, { CalendarView, type OnEventClickData } from 'kalend'
+import Kalend, {
+	type CalendarEvent,
+	CalendarView,
+	type OnEventClickData,
+} from 'kalend'
 import 'kalend/dist/styles/index.css' // import styles
 import { api } from '~/utils/api'
 import NiceModal from '@ebay/nice-modal-react'
@@ -92,7 +96,7 @@ export const ProjectsCalendar = () => {
 					}`}
 				>
 					<Kalend
-						events={calEvents}
+						events={calEvents as CalendarEvent[]}
 						onEventClick={onEventClick}
 						language={'en'}
 						initialDate={new Date().toISOString()}
