@@ -47,15 +47,22 @@ export const ProjectsCalendar = () => {
 		? [
 				...projectsData
 					.filter((project) => project.shootStart && project.shootEnd)
-					.map((project) => ({
-						id: `${project.id}-startEnd`,
-						startAt: (project.shootStart as Date).toISOString(),
-						endAt: (project.shootEnd as Date).toISOString(),
-						summary: `${project.approved ? 'Active' : 'Pipeline'} Shoot: ${
-							project.name
-						} | ${project.client}`,
-						color: project.approved ? '#5fda6e' : '#d59d5a',
-					})),
+					.map((project) => {
+						let endDate: Date | undefined
+						if (project.shootEnd) {
+							endDate = new Date(project.shootEnd?.getTime() + 3600)
+						}
+
+						return {
+							id: `${project.id}-startEnd`,
+							startAt: (project.shootStart as Date).toISOString(),
+							endAt: endDate?.toISOString(),
+							summary: `${project.approved ? 'Active' : 'Pipeline'} Shoot: ${
+								project.name
+							} | ${project.client}`,
+							color: project.approved ? '#5fda6e' : '#d59d5a',
+						}
+					}),
 				...projectsData
 					.filter((project) => project.dueDate)
 					.map((project) => ({
