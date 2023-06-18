@@ -62,6 +62,14 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+model File {
+  id        String   @id @default(cuid())
+  name      String
+  url       String
+  Project   Project? @relation(fields: [projectId], references: [id])
+  projectId String?
+}
+
 model Project {
   id               String    @id @default(cuid())
   createdAt        DateTime  @default(now())
@@ -76,7 +84,7 @@ model Project {
   locations        String    @default("") @db.Text
   locationCount    Int       @default(0)
   finalisedScript  Boolean   @default(false)
-  scriptUrl        String[]
+  ScriptFiles      File[]
   budget           Int?
   resources        String[]
   actorsCount      Int       @default(0)

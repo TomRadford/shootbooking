@@ -19,6 +19,8 @@ import { type inferRouterOutputs } from '@trpc/server'
 import { type AppRouter } from '~/server/api/root'
 import { toast } from 'react-toastify'
 import { Listbox, Transition } from '@headlessui/react'
+import { type FileRouter } from 'uploadthing/next-legacy'
+import { UploadButton, CustomUploadDropzone } from '../common/Upload'
 
 type RouterOutput = inferRouterOutputs<AppRouter>
 
@@ -313,7 +315,7 @@ const EditProject = ({ project }: { project?: Project }) => {
 			? (project as unknown as ProjectInput)
 			: {
 					resources: [],
-					scriptUrl: [],
+					scriptFiles: [],
 					approved: false,
 					locations: '',
 					actorsCount: 0,
@@ -350,7 +352,8 @@ const EditProject = ({ project }: { project?: Project }) => {
 		},
 	})
 
-	const onSubmit = (data: ProjectInput) => {
+	const onSubmit = async (data: ProjectInput) => {
+		//here
 		if (project) {
 			updateProject.mutate({ ...data, id: project.id })
 		} else {
@@ -430,7 +433,38 @@ const EditProject = ({ project }: { project?: Project }) => {
 				value="finalisedScript"
 				type="yesNo"
 			/>
-			{/* {watch().finalisedScript && <p>Script upload goes here</p>} */}
+			{watch().finalisedScript && (
+				<div className="flex">
+					{watch().scriptFiles.map((file) => (
+						<p key={file.url}>{file.name}</p>
+					))}
+					<div className="w-44">
+						<CustomUploadDropzone<FileRouter>
+							endpoint="scriptUploader"
+							onClientUploadComplete={(res) => {
+								console.log(`file:`)
+								console.log(res)
+								setValue('scriptFiles', [
+									//here
+									...watch().scriptFiles,
+									res.map((uploadedFile) => {
+										return {
+											name: uploadedFile.fileUrl.split('_')[1],
+											url: uploadedFile.fileUrl,
+										}
+									}),
+								])
+							}}
+							onUploadError={(error: Error) => {
+								toast(`Error uploading file: ${error.message}`, {
+									autoClose: 3000,
+									type: 'error',
+								})
+							}}
+						/>
+					</div>
+				</div>
+			)}
 			<Input
 				errors={errors}
 				register={register}

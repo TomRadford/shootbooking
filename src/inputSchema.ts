@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { object, z } from 'zod'
 
 export const projectInputSchema = z.object({
 	name: z.string().min(3),
@@ -19,7 +19,13 @@ export const projectInputSchema = z.object({
 	locations: z.string(),
 	locationCount: z.number(),
 	finalisedScript: z.boolean(),
-	scriptUrl: z.string().url().array().default([]),
+	scriptFiles: z
+		.object({
+			name: z.string(),
+			url: z.string().url(),
+		})
+		.array()
+		.default([]),
 	budget: z.number().optional().nullable(),
 	resources: z.array(z.string()),
 	actorsCount: z.number(),

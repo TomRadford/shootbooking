@@ -1,8 +1,7 @@
 import { TRPCError } from '@trpc/server'
 import { projectInputSchema } from '~/inputSchema'
-import { createTRPCRouter, publicProcedure, protectedProcedure } from '../trpc'
+import { createTRPCRouter, protectedProcedure } from '../trpc'
 import { z } from 'zod'
-import { type Project } from '@prisma/client'
 import { sendProjectApproved, sendRequestApproval } from '~/server/email/mailer'
 export const projectRouter = createTRPCRouter({
 	postProject: protectedProcedure
