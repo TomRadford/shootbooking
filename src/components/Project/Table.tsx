@@ -83,6 +83,7 @@ const pipelineProjectColumns = [
 				month: 'numeric',
 				year: '2-digit',
 			}),
+		header: 'Updated at',
 	}),
 	// columnHelper.accessor('concept', {
 	// 	cell: (info) => info.getValue(),
